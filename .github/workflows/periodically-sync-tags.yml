@@ -1,0 +1,21 @@
+name: Merge upstream branches
+on:
+  schedule:
+    - cron: "14 2 * * *"
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Merge upstream
+        run: |
+          git config --global user.name 'tyzbit'
+          git config --global user.email '3319104+tyzbit@users.noreply.github.com'
+          git config --global push.followTags true # Only push tags from the checked-out branch
+          git pull --unshallow  # this option is very important, you would get
+                                # complains about unrelated histories without it.
+                                # (but actions/checkout@v2 can also be instructed
+                                # to fetch all git depth right from the start)
+          git remote add upstream https://github.com/example/test.git
+          git fetch tags upstream
+          git push --tags
